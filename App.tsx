@@ -3,11 +3,11 @@ import {Alert, Button, StyleSheet, Text, TextInput, View} from 'react-native';
 import {useState} from "react";
 import ExpoCheckbox from "expo-checkbox";
 import {HideKeyboard} from "./src/components/hideKeyboard/hideKeyboard";
+import {globalStyles} from "./src/globalStyles/globalStyles";
+import {TitleInput} from "./src/components/inputChangeTitle/titleInput";
 
 export default function App() {
-
     const [input, setInput] = useState('')
-
     const [tasks, setTasks] = useState([
         {id: 1, title: 'HTML', isDone: true},
         {id: 2, title: 'CSS', isDone: true},
@@ -15,37 +15,39 @@ export default function App() {
         {id: 4, title: 'React', isDone: false},
         {id: 5, title: 'React native', isDone: true},
     ])
-
-    const AddTask=()=>{
-        const newTask={id: tasks.length+1, title: input, isDone: false}
+    const [show, setShow] = useState(0)
+    const AddTask = () => {
+        const newTask = {id: tasks.length + 1, title: input, isDone: false}
         // Alert.alert(JSON.stringify(newTask))
-        setTasks([...tasks,newTask])
+        setTasks([...tasks, newTask])
         setInput('')
     }
 
-
-
+    const changeTitle = (id: number, title: string) => {
+        setTasks(tasks.map(t => t.id === id ? {...t, title} : t))
+    }
 
     return (
         <View style={styles.container}>
             <HideKeyboard>
-                <View style={[ {width: '80%', alignItems: "center", paddingVertical: 20}]}>
+                <View style={[{width: '80%', alignItems: "center", paddingVertical: 20}]}>
                     <TextInput style={styles.input} value={input} onChangeText={setInput}></TextInput>
                 </View>
             </HideKeyboard>
-            <View  style={[globalStyles.border, {width: '40%',}]}>
+            <View style={[globalStyles.border, {width: '40%',}]}>
                 <Button title={'Add task'} onPress={AddTask}/>
             </View>
             <View style={{width: '60%'}}>
                 {tasks.map(t => {
-                    const ChangeIsDone=()=>{
-                        const id=t.id
-                        setTasks( tasks.map((t)=>t.id===id?{...t,isDone:!t.isDone}:t))
-
+                    const ChangeIsDone = () => {
+                        const id = t.id
+                        setTasks(tasks.map((t) => t.id === id ? {...t, isDone: !t.isDone} : t))
                     }
                     return <View key={t.id} style={[styles.boxTask, globalStyles.border]}>
                         <ExpoCheckbox value={t.isDone} onValueChange={ChangeIsDone}></ExpoCheckbox>
-                        <Text>{t.title}</Text>
+                        {show === t.id ?
+                            <TitleInput id={t.id} title={t.title} setInput={changeTitle} setShow={setShow}/> :
+                            <Text onPress={() => setShow(t.id)}>{t.title}</Text>}
                     </View>
                 })}
             </View>
@@ -81,9 +83,3 @@ const styles = StyleSheet.create({
     }
 });
 
-const globalStyles = StyleSheet.create({
-    border: {
-        borderColor: '#e53170',
-        borderWidth: 1,
-    }
-})
