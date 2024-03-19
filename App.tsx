@@ -21,8 +21,10 @@ export default function App() {
         // Alert.alert(JSON.stringify(newTask))
         setTasks([...tasks,newTask])
         setInput('')
-
     }
+
+
+
 
     return (
         <View style={styles.container}>
@@ -36,8 +38,13 @@ export default function App() {
             </View>
             <View style={{width: '60%'}}>
                 {tasks.map(t => {
+                    const ChangeIsDone=()=>{
+                        const id=t.id
+                        setTasks( tasks.map((t)=>t.id===id?{...t,isDone:!t.isDone}:t))
+
+                    }
                     return <View key={t.id} style={[styles.boxTask, globalStyles.border]}>
-                        <ExpoCheckbox value={t.isDone}></ExpoCheckbox>
+                        <ExpoCheckbox value={t.isDone} onValueChange={ChangeIsDone}></ExpoCheckbox>
                         <Text>{t.title}</Text>
                     </View>
                 })}
